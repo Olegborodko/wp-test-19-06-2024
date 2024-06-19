@@ -1,0 +1,13 @@
+/*
+ Theme Name:     fish-theme
+ Description:    Child Twenty Twenty-Four
+ Author:         Oleg Borodko
+ Template:       twentytwentyfour
+ Version:        1.0.0
+*/
+
+#calendarId{
+  width: 70%;
+  margin: 0 auto;
+  padding-top: 50px;
+}
