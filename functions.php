@@ -11,7 +11,7 @@ function create_post_type_event()
       ),
       'public' => true,
       'has_archive' => true,
-      'supports' => array('title', 'editor', 'thumbnail', 'custom-fields'),
+      'supports' => array('title', 'thumbnail'),
     )
   );
 }
@@ -43,3 +43,32 @@ function fish_enqueue_scripts_styles()
   wp_enqueue_style('child-style', get_stylesheet_uri(), array(), '1.0.1');
 }
 add_action('wp_enqueue_scripts', 'fish_enqueue_scripts_styles');
+
+function get_events_data() {
+  $events = array();
+
+  $query = new WP_Query(array(
+      'post_type' => 'event',
+      'posts_per_page' => -1,
+  ));
+
+  while ($query->have_posts()) {
+      $query->the_post();
+
+      $id = get_the_ID();
+      $event_title = get_the_title();
+      $event_start_date = get_field('start_date');
+      $event_end_date = get_field('end_date');
+
+      $events[] = array(
+          'id' => $id,
+          'title' => $event_title,
+          'start' => $event_start_date,
+          'end' => $event_end_date,
+      );
+  }
+
+  wp_reset_postdata();
+
+  return $events;
+}
