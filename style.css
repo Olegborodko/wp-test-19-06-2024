@@ -11,3 +11,7 @@
   margin: 0 auto;
   padding: 50px 0;
 }
+
+#event_modal #validation{
+  color: red;
+}

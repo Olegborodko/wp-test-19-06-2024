@@ -69,7 +69,7 @@ function get_events_data()
     $id = get_the_ID();
     $event_title = get_the_title();
     $event_start_date = get_field('start_date');
-    $event_end_date = get_field('end_date');
+    $event_end_date = get_field('end_date') . 'T23:59:00';
 
     $thumbnail_id = get_post_thumbnail_id($id);
     if ($thumbnail_id) {
@@ -95,7 +95,10 @@ function get_events_data()
 
 function get_event_details()
 {
-  $event_id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+  $event_id = isset($_POST['id']) ? intval($_POST['id']) : false;
+  if (!$event_id) {
+    wp_send_json_error("entry not found", 404);
+  }
 
   $events = get_events_data();
 
@@ -106,7 +109,68 @@ function get_event_details()
     }
   }
 
-  wp_send_json_error(false);
+  wp_send_json_error("entry not found", 404);
 }
 add_action('wp_ajax_get_event_details', 'get_event_details');
 add_action('wp_ajax_nopriv_get_event_details', 'get_event_details');
+
+function event_registration()
+{
+  $name = $_POST['name'] ?? false;
+  $email = $_POST['email'] ?? false;
+  $phone = $_POST['phone'] ?? false;
+  $event = $_POST['event'] ?? false;
+
+  if (empty($name) || empty($email) || empty($phone) || empty($event)) {
+    wp_send_json_error("not all data", 400);
+  }
+
+  $lead_post = array(
+    'post_title' => 'Lead ' . date('Y-m-d H:i:s'),
+    'post_type' => 'lead',
+    'post_status' => 'publish',
+  );
+
+  $lead_id = wp_insert_post($lead_post);
+
+  if ($lead_id) {
+    update_field('name', $name, $lead_id);
+    update_field('email', $email, $lead_id);
+    update_field('phone', $phone, $lead_id);
+    update_field('event', $event, $lead_id);
+    wp_send_json_success(true, 200);
+  } else {
+    wp_send_json_error("Failed to save lead", 500);
+  }
+}
+add_action('wp_ajax_event_registration', 'event_registration');
+add_action('wp_ajax_nopriv_event_registration', 'event_registration');
+
+
+function set_custom_edit_lead_columns($columns)
+{
+  $new_columns = array();
+
+  $new_columns['title'] = $columns['title'];
+  $new_columns['lead_email'] = __('Email');
+  $new_columns['lead_event'] = __('Event');
+  $new_columns['date'] = $columns['date'];
+
+  return $new_columns;
+}
+add_filter('manage_lead_posts_columns', 'set_custom_edit_lead_columns');
+
+function custom_lead_column($column, $post_id)
+{
+  switch ($column) {
+    case 'lead_event':
+      $event = get_post_meta($post_id, 'event', true);
+      echo $event ? $event : '';
+      break;
+    case 'lead_email':
+      $email = get_post_meta($post_id, 'email', true);
+      echo $email ? $email : '';
+      break;
+  }
+}
+add_action('manage_lead_posts_custom_column', 'custom_lead_column', 10, 2);
