@@ -8,22 +8,22 @@
 
 ## встановлення
 
-Потрібна батьківська тема twentytwentyfour
+Потрібна батьківська тема twentytwentyfour  
 Створіть папку теми twentytwentyfour-child
 
-Встановіть плагін **ACF**
+Встановіть плагін **ACF**  
 
-імпортуйте базу данних яка знаходиться в папці **db**
+імпортуйте базу данних яка знаходиться в папці **db**  
 
-Клонуйте в папку twentytwentyfour-child код:
+Клонуйте в папку twentytwentyfour-child код:  
     ```
     git clone https://github.com/Olegborodko/wp-test-19-06-2024.git
     ```
 
-Permalink Settings встановіть в Post name
+Permalink Settings встановіть в Post name  
 
-Сторінка для запуску з Template - сalendar
+Сторінка для запуску з Template - сalendar  
 
-**Пароль та логін wp**
-admin
-111111
+**Пароль та логін wp**  
+admin  
+111111  
